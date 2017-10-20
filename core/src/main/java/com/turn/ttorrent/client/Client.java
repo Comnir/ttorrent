@@ -43,6 +43,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,7 @@ public class Client extends Observable implements Runnable,
 	private Thread thread;
 	private boolean stop;
 	private long seed;
+	private AtomicReference<Timer> seedingTimer;
 
 	private ConnectionHandler service;
 	private Announce announce;
@@ -155,6 +157,7 @@ public class Client extends Observable implements Runnable,
 		this.peers = new ConcurrentHashMap<String, SharingPeer>();
 		this.connected = new ConcurrentHashMap<String, SharingPeer>();
 		this.random = new Random(System.currentTimeMillis());
+		this.seedingTimer = new AtomicReference<Timer>();
 	}
 
 	/**
@@ -279,6 +282,10 @@ public class Client extends Observable implements Runnable,
 		}
 
 		this.thread = null;
+		final Timer timer;
+		if (null != (timer = seedingTimer.getAndSet(null))) {
+			timer.cancel();
+		}
 	}
 
 	/**
@@ -944,15 +951,23 @@ public class Client extends Observable implements Runnable,
 
 		this.setState(ClientState.SEEDING);
 		if (this.seed < 0) {
-			logger.info("Seeding indefinetely...");
+			logger.info("Seeding indefinitely...");
 			return;
 		}
 
 		// In case seeding for 0 seconds we still need to schedule the task in
 		// order to call stop() from different thread to avoid deadlock
 		logger.info("Seeding for {} seconds...", this.seed);
-		Timer timer = new Timer();
-		timer.schedule(new ClientShutdown(this, timer), this.seed*1000);
+		/*Timer timer = new Timer();
+		timer.schedule(new ClientShutdown(this, timer), this.seed*1000);*/
+
+		if (null == seedingTimer.getAndSet(new Timer())) {
+			final Timer timer = seedingTimer.get();
+			timer.schedule(new ClientShutdown(this, timer), this.seed * 1000);
+		} else {
+			logger.warn("ClientShutdown is already scheduled!");
+		}
+
 	}
 
 	/**
