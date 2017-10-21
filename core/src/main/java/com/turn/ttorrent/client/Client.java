@@ -714,6 +714,10 @@ public class Client extends Observable implements Runnable,
 		}
 	}
 
+	public boolean readyForConnection() {
+		return this.service.isAlive();
+	}
+
 
 	/** IncomingConnectionListener handler(s). ********************************/
 
