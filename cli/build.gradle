@@ -1,0 +1,7 @@
+
+description = 'Java BitTorrent library CLI'
+dependencies {
+  compile project(':ttorrent-core')
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version:'1.6.4'
+    compile group: 'net.sf', name: 'jargs', version:'1.0'
+}

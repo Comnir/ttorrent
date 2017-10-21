@@ -1,0 +1,34 @@
+allprojects  {
+  apply plugin: 'maven'
+  group = 'com.jefferson.revised.turn'
+  version = artifactMajorVersion + "-" + artifactBuildNumber
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'maven-publish'
+  sourceCompatibility = 1.6
+  targetCompatibility = 1.6
+  tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+  }
+
+  repositories {
+    mavenLocal()
+
+    maven { url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+  }
+}
+
+String getProjectProperty(String propertyName)
+{
+  String movieTitle = "null"
+  if (hasProperty(propertyName))
+  {
+    movieTitle = this.properties[propertyName]
+    println 'Set property'
+    this.properties['artifactBuildNumber']='4'
+  }
+  return movieTitle
+}

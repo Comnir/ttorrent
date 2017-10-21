@@ -1,0 +1,6 @@
+rootProject.name = 'ttorrent'
+include ':ttorrent-core'
+include ':ttorrent-cli'
+
+project(':ttorrent-core').projectDir = "$rootDir/core" as File
+project(':ttorrent-cli').projectDir = "$rootDir/cli" as File

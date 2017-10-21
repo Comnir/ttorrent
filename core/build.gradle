@@ -1,0 +1,16 @@
+
+description = 'Java BitTorrent library core'
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version:'2.4'
+    compile group: 'org.simpleframework', name: 'simple', version:'4.1.21'
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.6.4'
+    testCompile group: 'org.testng', name: 'testng', version:'6.1.1'
+}
+test.useTestNG()
+
+task jarNewVersion {
+    ant.propertyfile(file: "../gradle.properties") {
+        entry( key: "artifactBuildNumber", value: Integer.parseInt(artifactBuildNumber) + 1)
+    }
+}
+jarNewVersion.mustRunAfter jar
