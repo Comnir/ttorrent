@@ -203,6 +203,8 @@ class PeerExchange {
 			IOUtils.closeQuietly(this.channel);
 		}
 
+		this.in.interrupt();
+
 		logger.debug("Peer exchange with {} closed.", this.peer);
 	}
 
