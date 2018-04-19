@@ -1,3 +1,4 @@
+apply plugin: 'maven'
 
 description = 'Java BitTorrent library core'
 dependencies {
@@ -8,9 +9,32 @@ dependencies {
 }
 test.useTestNG()
 
-task jarNewVersion {
-    ant.propertyfile(file: "../gradle.properties") {
-        entry( key: "artifactBuildNumber", value: Integer.parseInt(artifactBuildNumber) + 1)
+task incrementVersion {
+    doLast {
+        println 'update version'
+        ant.propertyfile(file: "../gradle.properties") {
+            entry(key: "artifactBuildNumber", value: Integer.parseInt(artifactBuildNumber) + 1)
+        }
     }
 }
-jarNewVersion.mustRunAfter jar
+jar.dependsOn incrementVersion
+
+uploadArchives {
+    def mavenRepositoryLocalPath = project.projectDir.toPath().resolve('../../regah').toUri()
+    if (false) {
+        println 'NOT updating maven repository - please make sure the maven repository is set to the correct folder ' + mavenRepositoryLocalPath
+        println 'Until this process is done automatically, this task should be enabled manually.'
+        return
+    }
+    // when uploading to local maven repository,
+    // the path should be set manually to 'regah' repository's maven branch.
+
+    println 'As uri: ' + mavenRepositoryLocalPath
+    print('local maven path:  ' + mavenRepositoryLocalPath)
+    repositories {
+        mavenDeployer {
+            repository(url: mavenRepositoryLocalPath)
+            pom.artifactId = 'ttorrent-core'
+        }
+    }
+}
