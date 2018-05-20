@@ -4,3 +4,9 @@ include ':ttorrent-cli'
 
 project(':ttorrent-core').projectDir = "$rootDir/core" as File
 project(':ttorrent-cli').projectDir = "$rootDir/cli" as File
+
+buildCache {
+    local {
+        enabled = true
+    }
+}
