@@ -17,7 +17,7 @@ task incrementVersion {
         }
     }
 }
-jar.dependsOn incrementVersion
+incrementVersion.dependsOn jar
 
 uploadArchives {
     def mavenRepositoryLocalPath = project.projectDir.toPath().resolve('../../regah').toUri()
